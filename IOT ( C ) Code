@@ -1,0 +1,73 @@
+#include <SoftwareSerial.h>
+String value; 
+int TxD = 10; 
+int RxD = 11; 
+int Left_Motor_A = 2; 
+int Left_Motor_B = 3; 
+int Right_Motor_A = 4; 
+int Right_Motor_B = 5; 
+#define Trigger_Pin 8
+#define Echo_Pin 9
+SoftwareSerial bluetooth(TxD, RxD); 
+void setup() {
+ pinMode(Left_Motor_A, OUTPUT); 
+ pinMode(Left_Motor_B, OUTPUT); 
+ pinMode(Right_Motor_A, OUTPUT); 
+ pinMode(Right_Motor_B, OUTPUT); 
+ pinMode(Trigger_Pin, OUTPUT); 
+ pinMode(Echo_Pin, INPUT); 
+ Serial.begin(9600); 
+ bluetooth.begin(9600); 
+}
+void loop() {
+ long duration, distance; 
+ digitalWrite(Trigger_Pin, LOW); 
+ delayMicroseconds(2); 
+ digitalWrite(Trigger_Pin, HIGH); 
+ delayMicroseconds(10); 
+ digitalWrite(Trigger_Pin, LOW); 
+ duration = pulseIn(Echo_Pin, HIGH); 
+ distance = (duration / 2) / 29.1; 
+ if (distance < 50) {
+ digitalWrite(Left_Motor_A, LOW); 
+ digitalWrite(Left_Motor_B, LOW); 
+ digitalWrite(Right_Motor_A, LOW); 
+ digitalWrite(Right_Motor_B, LOW); 
+ }
+ Serial.println(value); 
+ if (bluetooth.available())
+ {
+ value = bluetooth.readString(); 
+ if (value == "forward") {
+ digitalWrite(Left_Motor_A, HIGH); 
+ digitalWrite(Left_Motor_B, LOW); 
+ digitalWrite(Right_Motor_A, HIGH); 
+ digitalWrite(Right_Motor_B, LOW); 
+ }
+ if (value == "backward") {
+ digitalWrite(Left_Motor_A, LOW); 
+ digitalWrite(Left_Motor_B, HIGH); 
+ digitalWrite(Right_Motor_A, LOW); 
+ digitalWrite(Right_Motor_B, HIGH); 
+ }
+ if (value == "right") {
+ digitalWrite(Left_Motor_A, HIGH); 
+ digitalWrite(Left_Motor_B, LOW); 
+ digitalWrite(Right_Motor_A, LOW); 
+ digitalWrite(Right_Motor_B, LOW); 
+ }
+ if (value == "left") {
+ digitalWrite(Left_Motor_A, LOW); 
+ digitalWrite(Left_Motor_B, LOW); 
+ digitalWrite(Right_Motor_A, HIGH); 
+ digitalWrite(Right_Motor_B, LOW); 
+ }
+ if (value == "stop") {
+ digitalWrite(Left_Motor_A, LOW); 
+ digitalWrite(Left_Motor_B, LOW); 
+ digitalWrite(Right_Motor_A, LOW); 
+ digitalWrite(Right_Motor_B, LOW); 
+ 
+ }
+}
+ }
